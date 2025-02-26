@@ -1,0 +1,201 @@
+﻿<Window x:Class="BeHocChuCaiWPF.ProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bé Học Chữ Cái" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFF5E6">
+
+    <Window.Resources>
+        <!-- Style cho Button -->
+        <Style x:Key="NextButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="25">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#45a049"/>
+                    <Setter Property="Cursor" Value="Hand"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Style cho Container của trứng -->
+        <Style x:Key="EggContainerStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" 
+                                     Opacity="0.2" Color="Gray"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style cho TextBlock chữ cái -->
+        <Style x:Key="LetterTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#1565C0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Nền trang sách -->
+        <Border CornerRadius="20" Margin="20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="5" 
+                                 Opacity="0.3" Color="Gray"/>
+            </Border.Effect>
+            <Border.Background>
+                <ImageBrush ImageSource="Images/book_background.png" 
+                           Stretch="Fill"/>
+            </Border.Background>
+        </Border>
+
+        <Grid Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid>
+                <Button Name="btnBackToStart" 
+            Style="{StaticResource NextButtonStyle}"
+            Content="← Màn Hình Chính"
+            Click="btnBackToStart_Click"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="0,10,0,0"/>
+
+                <StackPanel>
+                    <TextBlock Text="Tiến Độ Học Tập" 
+                  FontSize="40" FontWeight="Bold"
+                  HorizontalAlignment="Center"
+                  Foreground="#2E7D32">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="5" ShadowDepth="2" 
+                                Opacity="0.3" Color="Gray"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <TextBlock Text="Click vào trứng để bắt đầu học"
+                  FontSize="20" 
+                  HorizontalAlignment="Center"
+                  Margin="0,10,0,20"
+                  Foreground="#666666"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Grid trứng -->
+            <ScrollViewer Grid.Row="1" 
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="eggPairsPanel">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="4"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource EggContainerStyle}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Trứng -->
+                                    <Image Source="{Binding IsCracked, 
+                                           Converter={StaticResource EggStateConverter}}"
+                                           Width="120" Height="120"
+                                           MouseDown="EggPair_Click"
+                                           Tag="{Binding Index}"
+                                           Opacity="{Binding IsLocked, 
+                                           Converter={StaticResource LockOpacityConverter}}"
+                                           RenderTransformOrigin="0.5,0.5">
+                                        <Image.RenderTransform>
+                                            <ScaleTransform/>
+                                        </Image.RenderTransform>
+                                        <Image.Style>
+                                            <Style TargetType="Image">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Trigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation 
+                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                        To="1.1" Duration="0:0:0.2"/>
+                                                                    <DoubleAnimation 
+                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                        To="1.1" Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.EnterActions>
+                                                        <Trigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation 
+                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                                                        To="1" Duration="0:0:0.2"/>
+                                                                    <DoubleAnimation 
+                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                                                        To="1" Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.ExitActions>
+                                                    </Trigger>
+                                                    <DataTrigger Binding="{Binding IsLocked}" Value="True">
+                                                        <Setter Property="Cursor" Value="No"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsLocked}" Value="False">
+                                                        <Setter Property="Cursor" Value="Hand"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+
+                                    <!-- Chữ cái -->
+                                    <StackPanel Grid.Row="1" 
+                                              Orientation="Horizontal" 
+                                              HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding Letter1}"
+                                                 Style="{StaticResource LetterTextStyle}"/>
+                                        <TextBlock Text="-"
+                                                 Style="{StaticResource LetterTextStyle}"
+                                                 Margin="2,5,2,0"
+                                                 Visibility="{Binding Letter2, 
+                                                          Converter={StaticResource BoolToVis}}"/>
+                                        <TextBlock Text="{Binding Letter2}"
+                                                 Style="{StaticResource LetterTextStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>
