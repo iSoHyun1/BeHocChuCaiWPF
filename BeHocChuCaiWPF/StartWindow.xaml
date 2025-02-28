@@ -3,15 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Bé Học Chữ Cái" Height="700" Width="1000"
         WindowStartupLocation="CenterScreen"
-        Background="#FFF5E6">
+        Background="{StaticResource BackgroundGradient}">
 
     <Window.Resources>
-        <!-- Style cho Button -->
+        <!-- Easing Function cho animation mượt mà -->
+        <CubicEase x:Key="EaseInOut" EasingMode="EaseInOut"/>
+
+        <!-- Style cho Button chính -->
         <Style x:Key="StartButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryBlueBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="32"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="Padding" Value="40,20"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
@@ -20,8 +24,8 @@
                         <Border Background="{TemplateBinding Background}"
                                 CornerRadius="30">
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="10" ShadowDepth="5" 
-                                                Opacity="0.3" Color="Gray"/>
+                                <DropShadowEffect BlurRadius="15" ShadowDepth="5" 
+                                                Opacity="0.3" Color="#2E7D32"/>
                             </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" 
                                             VerticalAlignment="Center"/>
@@ -31,10 +35,24 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#45a049"/>
+                    <Setter Property="Background" Value="{StaticResource SecondaryGreenBrush}"/>
                     <Setter Property="Cursor" Value="Hand"/>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <!-- Style cho Title -->
+        <Style x:Key="TitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="64"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Foreground" Value="{StaticResource SoftPurpleBrush}"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="5" ShadowDepth="2" 
+                                     Opacity="0.3" Color="Gray"/>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
@@ -59,19 +77,13 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Title -->
+            <!-- Title với style mới -->
             <TextBlock Text="Bé Học Chữ Cái" 
-                      FontSize="64" FontWeight="Bold"
+                      Style="{StaticResource TitleStyle}"
                       HorizontalAlignment="Center"
-                      Margin="0,40,0,0"
-                      Foreground="#2E7D32">
-                <TextBlock.Effect>
-                    <DropShadowEffect BlurRadius="5" ShadowDepth="2" 
-                                     Opacity="0.3" Color="Gray"/>
-                </TextBlock.Effect>
-            </TextBlock>
+                      Margin="0,40,0,0"/>
 
-            <!-- Mascot Container -->
+            <!-- Mascot Container với animation cải tiến -->
             <Grid Grid.Row="1">
                 <Border Width="400" Height="400"
                         Background="White" CornerRadius="200"
@@ -90,6 +102,7 @@
                         <TransformGroup>
                             <ScaleTransform/>
                             <TranslateTransform/>
+                            <RotateTransform/>
                         </TransformGroup>
                     </Image.RenderTransform>
                     <Image.Triggers>
@@ -98,7 +111,13 @@
                                 <Storyboard RepeatBehavior="Forever">
                                     <DoubleAnimation 
                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)"
-                                        From="0" To="20" Duration="0:0:1.5"
+                                        From="0" To="20" Duration="0:0:2"
+                                        EasingFunction="{StaticResource EaseInOut}"
+                                        AutoReverse="True"/>
+                                    <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)"
+                                        From="-5" To="5" Duration="0:0:2"
+                                        EasingFunction="{StaticResource EaseInOut}"
                                         AutoReverse="True"/>
                                 </Storyboard>
                             </BeginStoryboard>
@@ -107,7 +126,7 @@
                 </Image>
             </Grid>
 
-            <!-- Button Container -->
+            <!-- Button Container với animation mượt hơn -->
             <StackPanel Grid.Row="2" Margin="0,0,0,40">
                 <Button Name="btnStart" 
                         Content="Bắt Đầu Học"
@@ -122,11 +141,13 @@
                                 <Storyboard RepeatBehavior="Forever">
                                     <DoubleAnimation 
                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                        From="1" To="1.05" Duration="0:0:0.5"
+                                        From="1" To="1.1" Duration="0:0:1"
+                                        EasingFunction="{StaticResource EaseInOut}"
                                         AutoReverse="True"/>
                                     <DoubleAnimation 
                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                        From="1" To="1.05" Duration="0:0:0.5"
+                                        From="1" To="1.1" Duration="0:0:1"
+                                        EasingFunction="{StaticResource EaseInOut}"
                                         AutoReverse="True"/>
                                 </Storyboard>
                             </BeginStoryboard>
@@ -136,9 +157,10 @@
 
                 <TextBlock Text="Học chữ cái qua trò chơi vui nhộn!"
                           FontSize="24" 
+                          FontFamily="Segoe UI"
                           HorizontalAlignment="Center"
                           Margin="0,20,0,0"
-                          Foreground="#666666"/>
+                          Foreground="{StaticResource SoftRedBrush}"/>
             </StackPanel>
         </Grid>
     </Grid>

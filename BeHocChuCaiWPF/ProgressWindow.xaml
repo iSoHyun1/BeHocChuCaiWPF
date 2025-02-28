@@ -3,15 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Bé Học Chữ Cái" Height="700" Width="1000"
         WindowStartupLocation="CenterScreen"
-        Background="#FFF5E6">
+        Background="{StaticResource BackgroundGradient}">
 
     <Window.Resources>
+        <CubicEase x:Key="EaseInOut" EasingMode="EaseInOut"/>
+
         <!-- Style cho Button -->
         <Style x:Key="NextButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryBlueBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="Padding" Value="20,10"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
@@ -19,6 +22,10 @@
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}"
                                 CornerRadius="25">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="3" 
+                                                Opacity="0.3" Color="#2E7D32"/>
+                            </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" 
                                             VerticalAlignment="Center"/>
                         </Border>
@@ -27,7 +34,7 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#45a049"/>
+                    <Setter Property="Background" Value="{StaticResource SecondaryGreenBrush}"/>
                     <Setter Property="Cursor" Value="Hand"/>
                 </Trigger>
             </Style.Triggers>
@@ -37,10 +44,10 @@
         <Style x:Key="EggContainerStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="15"/>
-            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Margin" Value="15"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" 
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="5" 
                                      Opacity="0.2" Color="Gray"/>
                 </Setter.Value>
             </Setter>
@@ -48,11 +55,32 @@
 
         <!-- Style cho TextBlock chữ cái -->
         <Style x:Key="LetterTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontSize" Value="28"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Foreground" Value="#1565C0"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Foreground" Value="{StaticResource SoftPurpleBrush}"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0,5,0,0"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="2" ShadowDepth="1" 
+                                     Opacity="0.2" Color="Gray"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style cho Title -->
+        <Style x:Key="HeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="40"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBlueBrush}"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="5" ShadowDepth="2" 
+                                     Opacity="0.3" Color="Gray"/>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
 
@@ -78,36 +106,65 @@
             <!-- Header -->
             <Grid>
                 <Button Name="btnBackToStart" 
-            Style="{StaticResource NextButtonStyle}"
-            Content="← Màn Hình Chính"
-            Click="btnBackToStart_Click"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Margin="0,10,0,0"/>
+                        Style="{StaticResource NextButtonStyle}"
+                        Content="← Màn Hình Chính"
+                        Click="btnBackToStart_Click"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="0,10,0,0">
+                    <Button.RenderTransform>
+                        <ScaleTransform/>
+                    </Button.RenderTransform>
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                        To="1.05" Duration="0:0:0.2"
+                                        EasingFunction="{StaticResource EaseInOut}"/>
+                                    <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                        To="1.05" Duration="0:0:0.2"
+                                        EasingFunction="{StaticResource EaseInOut}"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                        To="1.0" Duration="0:0:0.2"
+                                        EasingFunction="{StaticResource EaseInOut}"/>
+                                    <DoubleAnimation 
+                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                        To="1.0" Duration="0:0:0.2"
+                                        EasingFunction="{StaticResource EaseInOut}"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
 
                 <StackPanel>
                     <TextBlock Text="Tiến Độ Học Tập" 
-                  FontSize="40" FontWeight="Bold"
-                  HorizontalAlignment="Center"
-                  Foreground="#2E7D32">
-                        <TextBlock.Effect>
-                            <DropShadowEffect BlurRadius="5" ShadowDepth="2" 
-                                Opacity="0.3" Color="Gray"/>
-                        </TextBlock.Effect>
-                    </TextBlock>
+                             Style="{StaticResource HeaderStyle}"
+                             HorizontalAlignment="Center"/>
 
                     <TextBlock Text="Click vào trứng để bắt đầu học"
-                  FontSize="20" 
-                  HorizontalAlignment="Center"
-                  Margin="0,10,0,20"
-                  Foreground="#666666"/>
+                             FontSize="20" 
+                             FontFamily="Segoe UI"
+                             HorizontalAlignment="Center"
+                             Margin="0,10,0,20"
+                             Foreground="{StaticResource SoftRedBrush}"/>
                 </StackPanel>
             </Grid>
 
-            <!-- Grid trứng -->
+            <!-- Grid trứng với animation mượt mà hơn -->
             <ScrollViewer Grid.Row="1" 
-                         VerticalScrollBarVisibility="Auto"
-                         HorizontalScrollBarVisibility="Disabled">
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled">
                 <ItemsControl x:Name="eggPairsPanel">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -126,15 +183,18 @@
 
                                     <!-- Trứng -->
                                     <Image Source="{Binding IsCracked, 
-                                           Converter={StaticResource EggStateConverter}}"
-                                           Width="120" Height="120"
-                                           MouseDown="EggPair_Click"
-                                           Tag="{Binding Index}"
-                                           Opacity="{Binding IsLocked, 
-                                           Converter={StaticResource LockOpacityConverter}}"
-                                           RenderTransformOrigin="0.5,0.5">
+                               Converter={StaticResource EggStateConverter}}"
+                               Width="120" Height="120"
+                               MouseDown="EggPair_Click"
+                               Tag="{Binding Index}"
+                               Opacity="{Binding IsLocked, 
+                               Converter={StaticResource LockOpacityConverter}}"
+                               RenderTransformOrigin="0.5,0.5">
                                         <Image.RenderTransform>
-                                            <ScaleTransform/>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <RotateTransform/>
+                                            </TransformGroup>
                                         </Image.RenderTransform>
                                         <Image.Style>
                                             <Style TargetType="Image">
@@ -144,11 +204,17 @@
                                                             <BeginStoryboard>
                                                                 <Storyboard>
                                                                     <DoubleAnimation 
-                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                                                        To="1.1" Duration="0:0:0.2"/>
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                                            To="1.1" Duration="0:0:0.2"
+                                                            EasingFunction="{StaticResource EaseInOut}"/>
                                                                     <DoubleAnimation 
-                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                                                        To="1.1" Duration="0:0:0.2"/>
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                                            To="1.1" Duration="0:0:0.2"
+                                                            EasingFunction="{StaticResource EaseInOut}"/>
+                                                                    <DoubleAnimation 
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(RotateTransform.Angle)"
+                                                            To="5" Duration="0:0:0.2"
+                                                            EasingFunction="{StaticResource EaseInOut}"/>
                                                                 </Storyboard>
                                                             </BeginStoryboard>
                                                         </Trigger.EnterActions>
@@ -156,11 +222,17 @@
                                                             <BeginStoryboard>
                                                                 <Storyboard>
                                                                     <DoubleAnimation 
-                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                                                        To="1" Duration="0:0:0.2"/>
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                                            To="1" Duration="0:0:0.2"
+                                                            EasingFunction="{StaticResource EaseInOut}"/>
                                                                     <DoubleAnimation 
-                                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                                                        To="1" Duration="0:0:0.2"/>
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                                                            To="1" Duration="0:0:0.2"
+                                                            EasingFunction="{StaticResource EaseInOut}"/>
+                                                                    <DoubleAnimation 
+                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(RotateTransform.Angle)"
+                                                            To="0" Duration="0:0:0.2"
+                                                            EasingFunction="{StaticResource EaseInOut}"/>
                                                                 </Storyboard>
                                                             </BeginStoryboard>
                                                         </Trigger.ExitActions>
@@ -178,17 +250,17 @@
 
                                     <!-- Chữ cái -->
                                     <StackPanel Grid.Row="1" 
-                                              Orientation="Horizontal" 
-                                              HorizontalAlignment="Center">
+                                  Orientation="Horizontal" 
+                                  HorizontalAlignment="Center">
                                         <TextBlock Text="{Binding Letter1}"
-                                                 Style="{StaticResource LetterTextStyle}"/>
+                                     Style="{StaticResource LetterTextStyle}"/>
                                         <TextBlock Text="-"
-                                                 Style="{StaticResource LetterTextStyle}"
-                                                 Margin="2,5,2,0"
-                                                 Visibility="{Binding Letter2, 
-                                                          Converter={StaticResource BoolToVis}}"/>
+                                     Style="{StaticResource LetterTextStyle}"
+                                     Margin="2,5,2,0"
+                                     Visibility="{Binding Letter2, 
+                                              Converter={StaticResource BoolToVis}}"/>
                                         <TextBlock Text="{Binding Letter2}"
-                                                 Style="{StaticResource LetterTextStyle}"/>
+                                     Style="{StaticResource LetterTextStyle}"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
