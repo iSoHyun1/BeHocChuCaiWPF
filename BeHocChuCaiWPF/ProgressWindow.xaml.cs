@@ -3,25 +3,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace BeHocChuCaiWPF
 {
-    /// <summary>
-    /// Interaction logic for ProgressWindow.xaml
-    /// </summary>
     public partial class ProgressWindow : Window
     {
+        private const string ConnectionString = "Data Source=alphabet.db;Version=3;";
         private ObservableCollection<EggPair> eggPairs;
         private static Dictionary<int, bool> crackedStates = new Dictionary<int, bool>();
 
@@ -33,7 +24,6 @@ namespace BeHocChuCaiWPF
 
         private void btnBackToStart_Click(object sender, RoutedEventArgs e)
         {
-            // Animation fade out
             var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.3));
             fadeOut.Completed += (s, _) =>
             {
@@ -43,50 +33,64 @@ namespace BeHocChuCaiWPF
             };
             this.BeginAnimation(OpacityProperty, fadeOut);
         }
+
         private void LoadEggPairs()
         {
             eggPairs = new ObservableCollection<EggPair>();
 
             try
             {
-                using (var conn = new SQLiteConnection("Data Source=alphabet.db;Version=3;"))
+                using (var conn = new SQLiteConnection(ConnectionString))
                 {
                     conn.Open();
-                    var cmd = new SQLiteCommand("SELECT Letter FROM Alphabet LIMIT 24", conn); // Giới hạn 24 chữ cái
-                    var reader = cmd.ExecuteReader();
-
-                    List<string> letters = new List<string>();
-                    while (reader.Read())
+                    using (var cmd = new SQLiteCommand("SELECT Letter FROM Alphabet LIMIT 26", conn))
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        letters.Add(reader["Letter"].ToString());
-                    }
-
-                    // Tạo 12 cặp trứng
-                    for (int i = 0; i < 24; i += 2)
-                    {
-                        var pair = new EggPair
+                        List<string> letters = new List<string>();
+                        while (reader.Read())
                         {
-                            Index = i,
-                            Letter1 = letters[i],
-                            Letter2 = i + 1 < letters.Count ? letters[i + 1] : null,
-                            IsCracked = crackedStates.ContainsKey(i) && crackedStates[i],
-                            IsLocked = i > 0 && (!crackedStates.ContainsKey(i - 2) || !crackedStates[i - 2])
-                        };
-                        eggPairs.Add(pair);
+                            letters.Add(reader["Letter"].ToString());
+                        }
+
+                        for (int i = 0; i < 26; i += 2)
+                        {
+                            var pair = new EggPair
+                            {
+                                Index = i,
+                                Letter1 = letters[i],
+                                Letter2 = i + 1 < letters.Count ? letters[i + 1] : null,
+                                IsCracked = IsEggCracked(i),
+                                IsLocked = !CanAccessEgg(i)
+                            };
+                            eggPairs.Add(pair);
+                        }
                     }
                 }
 
                 eggPairsPanel.ItemsSource = eggPairs;
             }
+            catch (SQLiteException ex)
+            {
+                MessageBox.Show($"Lỗi cơ sở dữ liệu: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải dữ liệu: {ex.Message}");
+                MessageBox.Show($"Lỗi không mong muốn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private bool IsEggCracked(int index) => crackedStates.ContainsKey(index) && crackedStates[index];
+
+        private bool CanAccessEgg(int index)
+        {
+            if (index == 0) return true;
+            return IsEggCracked(index - 2);
+        }
+
         public void UpdateCrackedState(int index)
         {
             crackedStates[index] = true;
-            LoadEggPairs(); // Cập nhật giao diện
+            LoadEggPairs();
         }
 
         private void EggPair_Click(object sender, MouseButtonEventArgs e)
@@ -94,19 +98,26 @@ namespace BeHocChuCaiWPF
             if (sender is FrameworkElement element && element.Tag is int index)
             {
                 var pair = eggPairs.FirstOrDefault(p => p.Index == index);
-                if (pair != null && !pair.IsLocked)
+                if (pair != null && CanAccessEgg(index))
                 {
-                    var mainWindow = new MainWindow();
-                    mainWindow.Owner = this; // Thiết lập Owner
-                    mainWindow.SetStartIndex(index);
-                    mainWindow.Closed += (s, args) =>
+                    var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.3));
+                    fadeOut.Completed += (s, _) =>
                     {
-                        crackedStates[index] = true;
-                        LoadEggPairs();
-                        this.Show();
+                        var mainWindow = new MainWindow();
+                        mainWindow.Owner = this;
+                        mainWindow.SetStartIndex(index);
+                        mainWindow.Closed += (s, args) =>
+                        {
+                            UpdateCrackedState(index);
+                            this.Show();
+                            // Animation khi quay lại
+                            this.Opacity = 0;
+                            this.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.3)));
+                        };
+                        mainWindow.Show();
+                        this.Hide();
                     };
-                    mainWindow.Show();
-                    this.Hide();
+                    this.BeginAnimation(OpacityProperty, fadeOut);
                 }
             }
         }
