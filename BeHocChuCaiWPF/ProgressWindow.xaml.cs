@@ -19,10 +19,10 @@ namespace BeHocChuCaiWPF
         public ProgressWindow()
         {
             InitializeComponent();
-            LoadEggPairs();
+            LoadEggPairsAsync();
         }
 
-        private void btnBackToStart_Click(object sender, RoutedEventArgs e)
+        private async void btnBackToStart_Click(object sender, RoutedEventArgs e)
         {
             var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.3));
             fadeOut.Completed += (s, _) =>
@@ -34,37 +34,34 @@ namespace BeHocChuCaiWPF
             this.BeginAnimation(OpacityProperty, fadeOut);
         }
 
-        private void LoadEggPairs()
+        private async Task LoadEggPairsAsync()
         {
             eggPairs = new ObservableCollection<EggPair>();
 
             try
             {
-                using (var conn = new SQLiteConnection(ConnectionString))
-                {
-                    conn.Open();
-                    using (var cmd = new SQLiteCommand("SELECT Letter FROM Alphabet LIMIT 26", conn))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        List<string> letters = new List<string>();
-                        while (reader.Read())
-                        {
-                            letters.Add(reader["Letter"].ToString());
-                        }
+                using var conn = new SQLiteConnection(ConnectionString);
+                await conn.OpenAsync();
+                using var cmd = new SQLiteCommand("SELECT Letter FROM Alphabet LIMIT 26", conn);
+                using var reader = await cmd.ExecuteReaderAsync();
 
-                        for (int i = 0; i < 26; i += 2)
-                        {
-                            var pair = new EggPair
-                            {
-                                Index = i,
-                                Letter1 = letters[i],
-                                Letter2 = i + 1 < letters.Count ? letters[i + 1] : null,
-                                IsCracked = IsEggCracked(i),
-                                IsLocked = !CanAccessEgg(i)
-                            };
-                            eggPairs.Add(pair);
-                        }
-                    }
+                List<string> letters = new List<string>();
+                while (await reader.ReadAsync())
+                {
+                    letters.Add(reader["Letter"].ToString());
+                }
+
+                for (int i = 0; i < 26; i += 2)
+                {
+                    var pair = new EggPair
+                    {
+                        Index = i,
+                        Letter1 = letters[i],
+                        Letter2 = i + 1 < letters.Count ? letters[i + 1] : null,
+                        IsCracked = IsEggCracked(i),
+                        IsLocked = !CanAccessEgg(i)
+                    };
+                    eggPairs.Add(pair);
                 }
 
                 eggPairsPanel.ItemsSource = eggPairs;
@@ -90,7 +87,7 @@ namespace BeHocChuCaiWPF
         public void UpdateCrackedState(int index)
         {
             crackedStates[index] = true;
-            LoadEggPairs();
+            LoadEggPairsAsync();
         }
 
         private void EggPair_Click(object sender, MouseButtonEventArgs e)

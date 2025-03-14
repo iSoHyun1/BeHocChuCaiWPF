@@ -5,7 +5,7 @@
         WindowStartupLocation="CenterScreen"
         Background="#FFF5E6">
     <Window.Resources>
-        <!-- Style cho Button -->
+        <!-- Style cho Button "Next" và "Back" -->
         <Style x:Key="NextButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#4CAF50"/>
             <Setter Property="Foreground" Value="White"/>
@@ -19,7 +19,7 @@
                         <Border Background="{TemplateBinding Background}"
                                 CornerRadius="25">
                             <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -31,18 +31,68 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Style chung cho hình trứng với hiệu ứng scale khi hover -->
+        <Style x:Key="EggImageStyle" TargetType="Image">
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Style cho container từ vựng với hiệu ứng fade & scale -->
+        <Style x:Key="WordContainerStyle" TargetType="StackPanel">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="0.5" ScaleY="0.5" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsVisible" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" From="0.5" To="1" Duration="0:0:0.5"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" From="0.5" To="1" Duration="0:0:0.5"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Grid>
         <!-- Nền trang sách với hiệu ứng đổ bóng -->
         <Border CornerRadius="20" Margin="20">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="15" ShadowDepth="5" 
-                                 Opacity="0.3" Color="Gray"/>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.3" Color="Gray"/>
             </Border.Effect>
             <Border.Background>
-                <ImageBrush ImageSource="Images/book_background.png" 
-                           Stretch="Fill"/>
+                <ImageBrush ImageSource="Images/book_background.png" Stretch="Fill"/>
             </Border.Background>
         </Border>
 
@@ -61,21 +111,17 @@
                        Margin="0,20,0,40"
                        Foreground="#2E7D32">
                 <TextBlock.Effect>
-                    <DropShadowEffect BlurRadius="5" ShadowDepth="2" 
-                                     Opacity="0.3" Color="Gray"/>
+                    <DropShadowEffect BlurRadius="5" ShadowDepth="2" Opacity="0.3" Color="Gray"/>
                 </TextBlock.Effect>
             </TextBlock>
 
             <!-- Progress Indicator -->
-            <StackPanel Grid.Row="0" 
-                        Orientation="Horizontal" 
-                        HorizontalAlignment="Right" 
-                        VerticalAlignment="Top" 
+            <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Margin="0,20,20,0">
                 <TextBlock Name="progressText" 
-                           Text="Cặp 1/12"
-                           FontSize="20" 
-                           FontWeight="Bold"
+                           Text="Cặp 1/13"
+                           FontSize="20" FontWeight="Bold"
                            Foreground="#2E7D32"/>
             </StackPanel>
 
@@ -88,58 +134,33 @@
 
                 <!-- Trứng 1 và nội dung -->
                 <Grid Grid.Column="0" Margin="20">
+                    <!-- Hình trứng nguyên -->
                     <Image Name="picEgg1Whole" Source="Images/egg_whole.png" 
                            Width="220" Height="240"
+                           Style="{StaticResource EggImageStyle}"
                            MouseDown="picEgg1_Click">
-                        <Image.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform CenterX="110" CenterY="120"/>
-                            </TransformGroup>
-                        </Image.RenderTransform>
                         <Image.ToolTip>
                             <ToolTip>
                                 <TextBlock Text="Click để mở trứng"/>
                             </ToolTip>
                         </Image.ToolTip>
-                        <Image.Triggers>
-                            <EventTrigger RoutedEvent="MouseEnter">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
-                                            To="1.1" Duration="0:0:0.2"/>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
-                                            To="1.1" Duration="0:0:0.2"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                            <EventTrigger RoutedEvent="MouseLeave">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
-                                            To="1" Duration="0:0:0.2"/>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
-                                            To="1" Duration="0:0:0.2"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Image.Triggers>
                     </Image>
 
+                    <!-- Hình trứng nứt -->
                     <Image Name="picEgg1Cracked" Source="Images/egg_cracked.png"
-                           Width="220" Height="240" Visibility="Hidden">
+                           Width="220" Height="240" Visibility="Hidden"
+                           RenderTransformOrigin="0.5,0.5">
                         <Image.RenderTransform>
-                            <ScaleTransform CenterX="110" CenterY="120"/>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
                         </Image.RenderTransform>
                     </Image>
 
+                    <!-- Hình chữ cái -->
                     <Image Name="picLetter1" Width="140" Height="140" 
-                           Visibility="Hidden" MouseDown="picLetter1_Click">
+                           Visibility="Hidden" MouseDown="picLetter1_Click"
+                           RenderTransformOrigin="0.5,0.5">
                         <Image.RenderTransform>
-                            <ScaleTransform CenterX="70" CenterY="70"/>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
                         </Image.RenderTransform>
                         <Image.ToolTip>
                             <ToolTip>
@@ -148,42 +169,16 @@
                         </Image.ToolTip>
                     </Image>
 
-                    <StackPanel Name="word1Container" Visibility="Hidden"
-                              VerticalAlignment="Bottom" Margin="0,0,0,20">
-                        <StackPanel.RenderTransform>
-                            <ScaleTransform CenterX="80" CenterY="80"/>
-                        </StackPanel.RenderTransform>
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Style.Triggers>
-                                    <Trigger Property="IsVisible" Value="True">
-                                        <Trigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation 
-                                                        Storyboard.TargetProperty="Opacity"
-                                                        From="0" To="1" Duration="0:0:0.5"/>
-                                                    <DoubleAnimation 
-                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                                        From="0.5" To="1" Duration="0:0:0.5"/>
-                                                    <DoubleAnimation 
-                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                                        From="0.5" To="1" Duration="0:0:0.5"/>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </Trigger.EnterActions>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
+                    <!-- Container từ vựng -->
+                    <StackPanel Name="word1Container" 
+                                Style="{StaticResource WordContainerStyle}"
+                                VerticalAlignment="Bottom" Margin="0,0,0,20">
                         <TextBlock Name="lblWord1" FontSize="32" FontWeight="Bold"
-                                 HorizontalAlignment="Center"
-                                 Foreground="#1565C0"/>
-                        <Image Name="picWord1" Width="160" Height="160"
-                               Margin="0,10,0,0">
+                                   HorizontalAlignment="Center" Foreground="#1565C0"/>
+                        <Image Name="picWord1" Width="160" Height="160" Margin="0,10,0,0">
                             <Image.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="3" 
-                                                 Opacity="0.3" Color="Gray"/>
+                                                  Opacity="0.3" Color="Gray"/>
                             </Image.Effect>
                         </Image>
                     </StackPanel>
@@ -191,58 +186,33 @@
 
                 <!-- Trứng 2 và nội dung -->
                 <Grid Grid.Column="1" Margin="20">
+                    <!-- Hình trứng nguyên -->
                     <Image Name="picEgg2Whole" Source="Images/egg_whole.png"
                            Width="220" Height="240"
+                           Style="{StaticResource EggImageStyle}"
                            MouseDown="picEgg2_Click">
-                        <Image.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform CenterX="110" CenterY="120"/>
-                            </TransformGroup>
-                        </Image.RenderTransform>
                         <Image.ToolTip>
                             <ToolTip>
                                 <TextBlock Text="Click để mở trứng"/>
                             </ToolTip>
                         </Image.ToolTip>
-                        <Image.Triggers>
-                            <EventTrigger RoutedEvent="MouseEnter">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
-                                            To="1.1" Duration="0:0:0.2"/>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
-                                            To="1.1" Duration="0:0:0.2"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                            <EventTrigger RoutedEvent="MouseLeave">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
-                                            To="1" Duration="0:0:0.2"/>
-                                        <DoubleAnimation 
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
-                                            To="1" Duration="0:0:0.2"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Image.Triggers>
                     </Image>
 
+                    <!-- Hình trứng nứt -->
                     <Image Name="picEgg2Cracked" Source="Images/egg_cracked.png"
-                           Width="220" Height="240" Visibility="Hidden">
+                           Width="220" Height="240" Visibility="Hidden"
+                           RenderTransformOrigin="0.5,0.5">
                         <Image.RenderTransform>
-                            <ScaleTransform CenterX="110" CenterY="120"/>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
                         </Image.RenderTransform>
                     </Image>
 
+                    <!-- Hình chữ cái -->
                     <Image Name="picLetter2" Width="140" Height="140"
-                           Visibility="Hidden" MouseDown="picLetter2_Click">
+                           Visibility="Hidden" MouseDown="picLetter2_Click"
+                           RenderTransformOrigin="0.5,0.5">
                         <Image.RenderTransform>
-                            <ScaleTransform CenterX="70" CenterY="70"/>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
                         </Image.RenderTransform>
                         <Image.ToolTip>
                             <ToolTip>
@@ -251,56 +221,31 @@
                         </Image.ToolTip>
                     </Image>
 
-                    <StackPanel Name="word2Container" Visibility="Hidden"
-                              VerticalAlignment="Bottom" Margin="0,0,0,20">
-                        <StackPanel.RenderTransform>
-                            <ScaleTransform CenterX="80" CenterY="80"/>
-                        </StackPanel.RenderTransform>
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
-                                <Style.Triggers>
-                                    <Trigger Property="IsVisible" Value="True">
-                                        <Trigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation 
-                                                        Storyboard.TargetProperty="Opacity"
-                                                        From="0" To="1" Duration="0:0:0.5"/>
-                                                    <DoubleAnimation 
-                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                                        From="0.5" To="1" Duration="0:0:0.5"/>
-                                                    <DoubleAnimation 
-                                                        Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                                        From="0.5" To="1" Duration="0:0:0.5"/>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </Trigger.EnterActions>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Style>
+                    <!-- Container từ vựng -->
+                    <StackPanel Name="word2Container" 
+                                Style="{StaticResource WordContainerStyle}"
+                                VerticalAlignment="Bottom" Margin="0,0,0,20">
                         <TextBlock Name="lblWord2" FontSize="32" FontWeight="Bold"
-                                 HorizontalAlignment="Center"
-                                 Foreground="#1565C0"/>
-                        <Image Name="picWord2" Width="160" Height="160"
-                               Margin="0,10,0,0">
+                                   HorizontalAlignment="Center" Foreground="#1565C0"/>
+                        <Image Name="picWord2" Width="160" Height="160" Margin="0,10,0,0">
                             <Image.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="3" 
-                                                 Opacity="0.3" Color="Gray"/>
+                                                  Opacity="0.3" Color="Gray"/>
                             </Image.Effect>
                         </Image>
                     </StackPanel>
                 </Grid>
             </Grid>
 
+            <!-- Nút quay lại -->
             <Button Name="btnBack" 
-                 Content="← Quay Lại"
-                 Style="{StaticResource NextButtonStyle}"
-                 Click="btnBack_Click"
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Top"
-                 Margin="20,20,0,0"/>
-            <!-- Nút Tiếp -->
+                    Content="← Quay Lại"
+                    Style="{StaticResource NextButtonStyle}"
+                    Click="btnBack_Click"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="20,20,0,0"/>
+            <!-- Nút tiếp -->
             <Button Name="btnNextPair" Content="Tiếp Theo →" 
                     Grid.Row="2" Style="{StaticResource NextButtonStyle}"
                     Click="btnNextPair_Click" Visibility="Hidden"
@@ -312,15 +257,12 @@
                     <EventTrigger RoutedEvent="Button.Loaded">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation 
-                                    Storyboard.TargetProperty="Opacity"
-                                    From="0" To="1" Duration="0:0:0.3"/>
-                                <DoubleAnimation 
-                                    Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                    From="0.5" To="1" Duration="0:0:0.3"/>
-                                <DoubleAnimation 
-                                    Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                    From="0.5" To="1" Duration="0:0:0.3"/>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                 From="0" To="1" Duration="0:0:0.3"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                 From="0.5" To="1" Duration="0:0:0.3"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                 From="0.5" To="1" Duration="0:0:0.3"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>

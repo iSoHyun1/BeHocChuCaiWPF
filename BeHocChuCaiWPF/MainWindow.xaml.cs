@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media;
+using System.Windows.Documents; // Dùng cho Run và TextBlock.Inlines
 
 namespace BeHocChuCaiWPF
 {
@@ -32,12 +33,14 @@ namespace BeHocChuCaiWPF
             LoadEggs();
             UpdateProgress(); // Cập nhật tiến độ khi thiết lập chỉ số bắt đầu
         }
+
         private void UpdateProgress()
         {
-            int totalPairs = 12;
+            int totalPairs = 13;
             int currentPair = (currentIndex / 2) + 1;
             progressText.Text = $"Cặp {currentPair}/{totalPairs}";
         }
+
         private void LoadEggs()
         {
             try
@@ -140,21 +143,20 @@ namespace BeHocChuCaiWPF
                     btnNextPair.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.5)));
                 }
 
-                speechHelper.SpeakVietnamese(currentLetter1);
+                //speechHelper.SpeakVietnamese(currentLetter1);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi xử lý animation: {ex.Message}");
             }
-            
         }
 
         private async void picEgg2_Click(object sender, MouseButtonEventArgs e)
         {
-            // Check if first egg is not cracked yet
+            // Kiểm tra nếu trứng 1 chưa nứt thì không xử lý trứng 2
             if (!egg1Cracked)
             {
-                return; // Exit the method without doing anything
+                return;
             }
 
             try
@@ -163,7 +165,7 @@ namespace BeHocChuCaiWPF
                 picEgg2Whole.Visibility = Visibility.Hidden;
                 picEgg2Cracked.Visibility = Visibility.Visible;
 
-                // Rest of the existing code remains the same...
+                // Animation cho trứng vỡ
                 var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.5));
                 var scaleUp = new DoubleAnimation(1, 1.2, TimeSpan.FromSeconds(0.3));
 
@@ -197,13 +199,27 @@ namespace BeHocChuCaiWPF
                     btnNextPair.Opacity = 0;
                     btnNextPair.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.5)));
                 }
-                speechHelper.SpeakVietnamese(currentLetter2);
+                //speechHelper.SpeakVietnamese(currentLetter2);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi xử lý animation: {ex.Message}");
             }
-           
+        }
+
+        // Helper method: Highlight ký tự trong từ vựng
+        private void SetVocabularyText(System.Windows.Controls.TextBlock textBlock, string word, char targetLetter, Brush highlightBrush, Brush normalBrush)
+        {
+            textBlock.Inlines.Clear();
+            foreach (char c in word)
+            {
+                var run = new Run(c.ToString());
+                if (char.ToUpper(c) == char.ToUpper(targetLetter))
+                    run.Foreground = highlightBrush;
+                else
+                    run.Foreground = normalBrush;
+                textBlock.Inlines.Add(run);
+            }
         }
 
         private async void picLetter1_Click(object sender, MouseButtonEventArgs e)
@@ -221,7 +237,7 @@ namespace BeHocChuCaiWPF
                     if (reader.Read())
                     {
                         word1 = reader["Word"].ToString().Trim();
-                        wordToSpeak = word1; // Lưu từ vựng trước khi đóng connection
+                        wordToSpeak = word1; // Lưu từ vựng
                         wordImage1 = Path.Combine(imageFolderPath, reader["WordImage"].ToString());
 
                         // Ẩn chữ cái với animation
@@ -231,7 +247,10 @@ namespace BeHocChuCaiWPF
                         // Hiện container từ vựng
                         word1Container.Visibility = Visibility.Visible;
                         word1Container.Opacity = 0;
-                        lblWord1.Text = word1;
+                        
+                        // Highlight ký tự trong từ (dùng ký tự của currentLetter1)
+                        SetVocabularyText(lblWord1, word1, currentLetter1[0], new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.White));
+
                         picWord1.Source = new BitmapImage(new Uri(wordImage1));
 
                         // Animation hiện từ vựng
@@ -242,11 +261,12 @@ namespace BeHocChuCaiWPF
                     }
                 }
 
-                // Đọc từ vựng sau khi đã load xong
+                // Phát âm từ vựng
+                /*
                 if (!string.IsNullOrEmpty(wordToSpeak))
                 {
-                    await speechHelper.SpeakVietnamese(wordToSpeak); // Sửa ở đây, dùng wordToSpeak thay vì currentLetter1
-                }
+                    await speechHelper.SpeakVietnamese(wordToSpeak);
+                }*/
             }
             catch (Exception ex)
             {
@@ -269,7 +289,7 @@ namespace BeHocChuCaiWPF
                     if (reader.Read())
                     {
                         word2 = reader["Word"].ToString().Trim();
-                        wordToSpeak = word2; // Lưu từ vựng trước khi đóng connection
+                        wordToSpeak = word2; // Lưu từ vựng
                         wordImage2 = Path.Combine(imageFolderPath, reader["WordImage"].ToString());
 
                         // Ẩn chữ cái với animation
@@ -279,7 +299,10 @@ namespace BeHocChuCaiWPF
                         // Hiện container từ vựng
                         word2Container.Visibility = Visibility.Visible;
                         word2Container.Opacity = 0;
-                        lblWord2.Text = word2;
+                        
+                        // Highlight ký tự trong từ (dùng ký tự của currentLetter2)
+                        SetVocabularyText(lblWord2, word2, currentLetter2[0], new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.White));
+
                         picWord2.Source = new BitmapImage(new Uri(wordImage2));
 
                         // Animation hiện từ vựng
@@ -290,11 +313,11 @@ namespace BeHocChuCaiWPF
                     }
                 }
 
-                // Đọc từ vựng sau khi đã load xong
-                if (!string.IsNullOrEmpty(wordToSpeak))
+                // Phát âm từ vựng
+                /*if (!string.IsNullOrEmpty(wordToSpeak))
                 {
-                    await speechHelper.SpeakVietnamese(wordToSpeak); // Sửa ở đây, dùng wordToSpeak thay vì word2
-                }
+                    await speechHelper.SpeakVietnamese(wordToSpeak);
+                }*/
             }
             catch (Exception ex)
             {
@@ -307,12 +330,14 @@ namespace BeHocChuCaiWPF
             speechHelper?.Dispose();
             base.OnClosed(e);
         }
+
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
             var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.3));
             fadeOut.Completed += (s, _) => this.Close();
             this.BeginAnimation(OpacityProperty, fadeOut);
         }
+
         private void btnNextPair_Click(object sender, RoutedEventArgs e)
         {
             // Đánh dấu cặp hiện tại đã hoàn thành
@@ -325,7 +350,8 @@ namespace BeHocChuCaiWPF
                 }
             }
 
-            if (currentIndex >= 24)
+            // Nếu không còn cặp nào nữa (26 chữ học xong), thông báo hoàn thành
+            if (currentIndex + 2 >= 26)
             {
                 MessageBox.Show("Hoàn thành bảng chữ cái!", "Chúc mừng",
                     MessageBoxButton.OK, MessageBoxImage.Information);
