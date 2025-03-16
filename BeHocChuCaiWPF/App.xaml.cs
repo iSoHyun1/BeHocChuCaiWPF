@@ -18,14 +18,14 @@ public partial class App : Application
         startWindow.Show();
         BGMPlayer.Open(new Uri("Assets/background_music.mp3", UriKind.Relative));
         BGMPlayer.Volume = 0.3;
-        // Khi nhạc chạy hết, tua về đầu và phát lại
+        //Set loop for background music
         BGMPlayer.MediaEnded += (s, _) =>
         {
             BGMPlayer.Position = TimeSpan.Zero;
             BGMPlayer.Play();
         };
-
-        // Bắt đầu phát nhạc
+    
+        //Play background music
         BGMPlayer.Play();
 
     }
