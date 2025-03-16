@@ -4,7 +4,6 @@
         Title="Bé Học Chữ Cái" Height="700" Width="1000"
         WindowStartupLocation="CenterScreen"
         Background="#FFF5E6">
-
     <Window.Resources>
         <!-- Style cho Button -->
         <Style x:Key="StartButtonStyle" TargetType="Button">
@@ -21,10 +20,10 @@
                                 CornerRadius="30">
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="10" ShadowDepth="5" 
-                                                Opacity="0.3" Color="Gray"/>
+                                                  Opacity="0.3" Color="Gray"/>
                             </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -38,7 +37,10 @@
         </Style>
     </Window.Resources>
 
+    <!-- Lớp Grid chính -->
     <Grid>
+       
+
         <!-- Nền trang sách với hiệu ứng đổ bóng -->
         <Border CornerRadius="20" Margin="20">
             <Border.Effect>
@@ -61,10 +63,10 @@
 
             <!-- Title -->
             <TextBlock Text="Bé Học Chữ Cái" 
-                      FontSize="64" FontWeight="Bold"
-                      HorizontalAlignment="Center"
-                      Margin="0,40,0,0"
-                      Foreground="#2E7D32">
+                       FontSize="64" FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,40,0,0"
+                       Foreground="#2E7D32">
                 <TextBlock.Effect>
                     <DropShadowEffect BlurRadius="5" ShadowDepth="2" 
                                      Opacity="0.3" Color="Gray"/>
@@ -108,7 +110,7 @@
             </Grid>
 
             <!-- Button Container -->
-            <StackPanel Grid.Row="2" Margin="0,0,0,40">
+            <StackPanel Grid.Row="2" Margin="0,0,0,40" HorizontalAlignment="Center">
                 <Button Name="btnStart" 
                         Content="Bắt Đầu Học"
                         Style="{StaticResource StartButtonStyle}"
@@ -135,11 +137,22 @@
                 </Button>
 
                 <TextBlock Text="Học chữ cái qua trò chơi vui nhộn!"
-                          FontSize="24" 
-                          HorizontalAlignment="Center"
-                          Margin="0,20,0,0"
-                          Foreground="#666666"/>
+                           FontSize="24" 
+                           HorizontalAlignment="Center"
+                           Margin="0,20,0,0"
+                           Foreground="#666666"/>
             </StackPanel>
         </Grid>
+
+        <!-- Nút điều khiển nhạc nền đặt sau cùng, để nằm trên cùng -->
+        <Button Name="btnToggleMusic"
+                Content="Tắt Nhạc"
+                Style="{StaticResource StartButtonStyle}"
+                Click="btnToggleMusic_Click"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="20"
+                Width="200"
+                Panel.ZIndex="999"/>
     </Grid>
 </Window>

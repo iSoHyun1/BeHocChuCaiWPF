@@ -19,6 +19,7 @@ namespace BeHocChuCaiWPF
     /// </summary>
     public partial class StartWindow : Window
     {
+        private bool isMusicOn = true;
         public StartWindow()
         {
             InitializeComponent();
@@ -31,5 +32,23 @@ namespace BeHocChuCaiWPF
             progressWindow.Show();
             this.Close();
         }
+
+
+        private void btnToggleMusic_Click(object sender, RoutedEventArgs e)
+        {
+            if (isMusicOn)
+            {
+                App.BGMPlayer.Pause();
+                btnToggleMusic.Content = "Bật Nhạc";
+                isMusicOn = false;
+            }
+            else
+            {
+                App.BGMPlayer.Play();
+                btnToggleMusic.Content = "Tắt Nhạc";
+                isMusicOn = true;
+            }
+        }
+
     }
 }

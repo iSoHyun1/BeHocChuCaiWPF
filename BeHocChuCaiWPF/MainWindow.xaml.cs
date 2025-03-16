@@ -249,7 +249,7 @@ namespace BeHocChuCaiWPF
                         word1Container.Opacity = 0;
                         
                         // Highlight ký tự trong từ (dùng ký tự của currentLetter1)
-                        SetVocabularyText(lblWord1, word1, currentLetter1[0], new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.White));
+                        SetVocabularyText(lblWord1, word1, currentLetter1[0], new SolidColorBrush(Colors.Red), (SolidColorBrush)new BrushConverter().ConvertFromString("#333333"));
 
                         picWord1.Source = new BitmapImage(new Uri(wordImage1));
 
@@ -299,9 +299,9 @@ namespace BeHocChuCaiWPF
                         // Hiện container từ vựng
                         word2Container.Visibility = Visibility.Visible;
                         word2Container.Opacity = 0;
-                        
+
                         // Highlight ký tự trong từ (dùng ký tự của currentLetter2)
-                        SetVocabularyText(lblWord2, word2, currentLetter2[0], new SolidColorBrush(Colors.Red), new SolidColorBrush(Colors.White));
+                        SetVocabularyText(lblWord2, word2, currentLetter2[0], new SolidColorBrush(Colors.Red), (SolidColorBrush)new BrushConverter().ConvertFromString("#333333"));
 
                         picWord2.Source = new BitmapImage(new Uri(wordImage2));
 
